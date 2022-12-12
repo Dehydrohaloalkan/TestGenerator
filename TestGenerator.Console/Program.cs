@@ -58,8 +58,8 @@ public static class Application
             writeMax = value;
         }
 
-        var pipelineService = new PipelineService(values[0], values[1], values[2], enteredPath);
-        await pipelineService.Generate();
+        var generator = new Core.TestsGenerator();
+        await generator.Generate(path, readMax, processMax, writeMax);
     }
 
     private static void PrintHelp()
