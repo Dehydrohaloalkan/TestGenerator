@@ -61,7 +61,7 @@ public static class Application
         }
 
         var generator = new Core.TestsGenerator();
-        generator.Generate(path, readMax, processMax, writeMax);
+        await generator.Generate(path, readMax, processMax, writeMax);
     }
 
     private static void PrintHelp()
@@ -75,7 +75,6 @@ public static class Application
     White ---- Max degree of Parallelism for Write
     "
             );
-
     }
 
 }

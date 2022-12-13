@@ -6,7 +6,7 @@ namespace TestGenerator.Core;
 
 public class TestsGenerator
 {
-    public void Generate(string path, int readMax, int processMax, int writeMax)
+    public async Task Generate(string path, int readMax, int processMax, int writeMax)
     {
         var readBlock = new TransformBlock<string, string>(ReadFile,
             new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = readMax });
@@ -28,7 +28,7 @@ public class TestsGenerator
         }
 
         readBlock.Complete();
-        writeBlock.Completion.Wait();
+        await writeBlock.Completion;
     }
 
     private async Task<string> ReadFile(string fileName)
