@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -19,8 +18,8 @@ internal class Writer
     public IEnumerable<TestInfo> Generate()
     {
         var usings = _syntaxTree.GetRoot().DescendantNodes().OfType<UsingDirectiveSyntax>().ToList();
-        var classes = _syntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
 
+        var classes = _syntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().ToList();
         var testClasses = classes.Select(ProcessClass).ToList();
 
         foreach (var testClass in testClasses)
@@ -28,10 +27,9 @@ internal class Writer
             var @namespace = testClass.Namespace;
 
             var code = SyntaxFactory.CompilationUnit()
-                .WithUsings(
-                    SyntaxFactory.List(
-                        usings)
-                )
+                .WithUsings(SyntaxFactory.List(usings)
+                    .Add(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("NUnit.Framework")))
+                    .Add(SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(@namespace.Name.ToString()))))
                 .WithMembers(
                     SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
                         SyntaxFactory.NamespaceDeclaration(
@@ -61,7 +59,10 @@ internal class Writer
             )
             .WithAttributeLists(
                 SyntaxFactory.SingletonList(
-                    SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("TestFixture")
+                    SyntaxFactory.AttributeList(
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.Attribute(
+                                SyntaxFactory.IdentifierName("TestFixture")
                             )
                         )
                     )
@@ -100,7 +101,10 @@ internal class Writer
                     )
                     .WithAttributeLists(
                         SyntaxFactory.SingletonList(
-                            SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("Test")
+                            SyntaxFactory.AttributeList(
+                                SyntaxFactory.SingletonSeparatedList(
+                                    SyntaxFactory.Attribute(
+                                        SyntaxFactory.IdentifierName("Test")
                                     )
                                 )
                             )

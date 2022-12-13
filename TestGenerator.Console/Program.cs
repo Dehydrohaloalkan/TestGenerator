@@ -13,16 +13,18 @@ public static class Application
             return;
         }
 
+        if (args[0] == "-help")
+        {
+            PrintHelp();
+            return;
+        }
+
         if (!Directory.Exists(args[0]))
         {
-            if (args[0] == "-help")
-            {
-                PrintHelp();
-                return;
-            }
             System.Console.WriteLine("Invalid directory path");
             return;
         }
+
         var path = args[0];
         var readMax = MaxDegreeOfParallelism;
         var processMax = MaxDegreeOfParallelism;
@@ -59,7 +61,7 @@ public static class Application
         }
 
         var generator = new Core.TestsGenerator();
-        await generator.Generate(path, readMax, processMax, writeMax);
+        generator.Generate(path, readMax, processMax, writeMax);
     }
 
     private static void PrintHelp()

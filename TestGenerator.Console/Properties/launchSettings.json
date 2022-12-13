@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TestGenerator.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\alexb\\Desktop\\11111\\"
+    }
+  }
+}

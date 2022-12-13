@@ -51,7 +51,7 @@ public class TestsGenerator
 
         foreach (var info in testInfos)
         {
-            File.WriteAllTextAsync(Path.Combine(outputFolder, $"{info.Name}Test.cs"), info.Code);
+            File.WriteAllTextAsync(Path.Combine(outputFolder, $"{info.Name}.cs"), info.Code);
         }
     }
 }
