@@ -1,19 +1,20 @@
-﻿using System.Threading.Tasks.Dataflow;
+﻿using System.Globalization;
+using System.Threading.Tasks.Dataflow;
 using TestGenerator.Core.CodeWriter;
 
 namespace TestGenerator.Core;
 
 public class TestsGenerator
 {
-    public async void Generate(string path, int readMax, int processMax, int writeMax)
+    public void Generate(string path, int readMax, int processMax, int writeMax)
     {
         var readBlock = new TransformBlock<string, string>(ReadFile,
             new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = readMax });
         
-        var generateBlock = new TransformBlock<string, TestInfo>(GenerateCode,
+        var generateBlock = new TransformBlock<string, List<TestInfo>>(GenerateCode,
             new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = processMax });
         
-        var writeBlock = new ActionBlock<TestInfo>(code => WriteFile(Path.Combine(path, "Tests"), code),
+        var writeBlock = new ActionBlock<List<TestInfo>>(code => WriteFile(Path.Combine(path, "Tests"), code),
             new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = writeMax });
         
         readBlock.LinkTo(generateBlock, new DataflowLinkOptions { PropagateCompletion = true });
@@ -28,7 +29,6 @@ public class TestsGenerator
 
         readBlock.Complete();
         writeBlock.Completion.Wait();
-
     }
 
     private async Task<string> ReadFile(string fileName)
@@ -36,18 +36,22 @@ public class TestsGenerator
         return await File.ReadAllTextAsync(fileName);
     }
 
-    private TestInfo GenerateCode(string code)
+    private List<TestInfo> GenerateCode(string code)
     {
-        var writer = new Writer();
-        return writer.Generate(code);
+        var writer = new Writer(code);
+        return writer.Generate().ToList();
     }
 
-    private void WriteFile(string outputFolder, TestInfo testInfo)
+    private void WriteFile(string outputFolder, List<TestInfo> testInfos)
     {
         if (!Directory.Exists(outputFolder))
         {
             Directory.CreateDirectory(outputFolder);
         }
-        File.WriteAllTextAsync(Path.Combine(outputFolder, $"{testInfo.Name}Test.cs"), testInfo.Code);
+
+        foreach (var info in testInfos)
+        {
+            File.WriteAllTextAsync(Path.Combine(outputFolder, $"{info.Name}Test.cs"), info.Code);
+        }
     }
 }
