@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace TestGenerator.Core.CodeWriter;
 
-internal class Writer
+public class Writer
 {
     private readonly string _code;
     private readonly SyntaxTree _syntaxTree;

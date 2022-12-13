@@ -1,3 +1,3 @@
 ﻿namespace TestGenerator.Core;
 
-internal record TestInfo(string Name, string Code);
+public record TestInfo(string Name, string Code);
